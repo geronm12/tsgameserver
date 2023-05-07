@@ -1,36 +1,60 @@
 import { Request, Response, NextFunction } from "express";
-import ApiResponseError from "../responses/api.response.error";
+import ApiResponseErrorCreator from "../responses/api.response.error";
+
+class SingletonManager {
+  private static instance: ApiResponseErrorCreator;
+
+  public static getInstance(): ApiResponseErrorCreator {
+    if (!SingletonManager.instance) {
+      SingletonManager.instance = new ApiResponseErrorCreator();
+    }
+
+    return SingletonManager.instance;
+  }
+}
 
 function AddGameValidation(
   req: Request,
   res: Response,
   next: NextFunction
-): Response<ApiResponseError, Record<string, ApiResponseError>> | void {
+): Response<
+  ApiResponseErrorCreator,
+  Record<string, ApiResponseErrorCreator>
+> | void {
   const { title } = req.body;
+  const { setValues } = SingletonManager.getInstance();
 
   if (!title) {
-    return res.json(new ApiResponseError("", false, 400));
+    return res.json(setValues("El titulo es obligatorioi"));
   }
 
   next();
 }
 
-function GetGamesValidation(req: Request, res: Response, next: NextFunction) {
+function GetGamesValidation(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Response<
+  ApiResponseErrorCreator,
+  Record<string, ApiResponseErrorCreator>
+> | void {
   let { page } = req.query;
   let parsedPage: number = 0;
+  const { setValues } = SingletonManager.getInstance();
 
   if (!page) {
-    throw Error("No loco");
+    return res
+      .status(400)
+      .json(setValues("El querString 'page' es obligatorio."));
   }
 
   parsedPage = parseInt(page.toString());
 
   if (isNaN(parsedPage)) {
-    throw Error("Loco la página no puede ser cualquier cosa");
-  }
-
-  if (!Number.isInteger(parsedPage)) {
-    throw Error("Envia enteros amigo, cansado me tenes");
+    return res
+      .status(400)
+      .json(setValues("El queryString 'page' debe ser un número"));
   }
 
   next();

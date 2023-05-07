@@ -1,13 +1,10 @@
 import ApiResponse from "./api.response";
 
-export default class ApiResponseError extends ApiResponse {
-  errorMsg: string;
+class ApiResponseError extends ApiResponse {
+  errorMsg: string = "";
 
-  constructor(errorMsg: string, ok: boolean, status: number) {
+  constructor() {
     super();
-    this.errorMsg = errorMsg;
-    this.status = status;
-    this.ok = ok;
   }
 
   public override GetFullLog(): string {
@@ -18,4 +15,28 @@ export default class ApiResponseError extends ApiResponse {
     }
     )}`;
   }
+}
+
+interface IApiResponseErrorCreator {
+  factory: () => ApiResponse;
+  setValues: (errorMsg: string, newStatus?: number) => void;
+}
+
+export default class ApiResponseErrorCreator
+  implements IApiResponseErrorCreator
+{
+  factory: () => ApiResponse = () => {
+    return new ApiResponseError();
+  };
+
+  setValues: (errorMsg: string, newStatus?: number) => void = (
+    errorMsg: string,
+    newStatus?: number
+  ) => {
+    const apiResponse = this.factory() as ApiResponseError;
+    apiResponse.ok = false;
+    apiResponse.status = newStatus || 400;
+    apiResponse.errorMsg = errorMsg;
+    return apiResponse;
+  };
 }

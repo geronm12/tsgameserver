@@ -2,7 +2,7 @@ import Game from "../models/GameScheme";
 import {
   ApiGameResponse,
   ApiGameResponseArray,
-} from "../configurations/responses/api.game.responses";
+} from "../configurations/responses/api.game.response";
 import { Request, Response } from "express";
 
 async function GetGameById(
