@@ -1,5 +1,5 @@
 import express, { Application, Request, Response } from "express";
-import { router } from "./src/routes/games_routes";
+import { router } from "./src/routes/games.routes";
 
 const app: Application = express();
 
